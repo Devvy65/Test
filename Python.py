@@ -9,7 +9,7 @@ logo = """
       `------'                           |__/           
 """
 
-print(logo)
+
 
 import random
 
@@ -39,81 +39,108 @@ class Hand:
 
 def Hit_or_Stand():
     while True:
-        test = input("Type 'y' to hit, or type 'n' to stand: ")
+        choice = input("Type 'y' to hit, or type 'n' to stand: ")
 
-        if test == "y":
-            player_hand.add_card()
-            print(player_hand)
-            print(f"Dealer's first card: {dealer_hand.hand[0]}")
-            if check():
+        if choice == "y":
+            player.add_card()
+            aces()
+            print(player)
+            print(f"Dealer's first card: [{dealer.hand[0]}, *]")
+            if bust():
                 break
 
-        elif test == "n":
-            if check():
+        elif choice == "n":
+            aces()
+            check()
+            if bust():
                 break
             else:
-                print(f"Your final hand: {player_hand.hand}, final score: {player_hand.total()}")
-                print(f"Dealer's final hand: {dealer_hand.hand}, final score {dealer_hand.total()}")
-                break
-
+                print(f"Your final hand: {player.hand}, final score: {player.total()}")
+                print(f"Dealer final hand: {dealer.hand}, final score: {dealer.total()}")
+                win()
+            break
 
         else:
-            print("That is not a choice please try again.")
+            print("That was not a valid choice, try again.")
             continue
 
 
-
 def check():
-    if player_hand.total() > 21:
-        print(f"Your final hand: {player_hand.hand}, final score: {player_hand.total()}")
-        print(f"Dealer's final hand: {dealer_hand.hand}, final score {dealer_hand.total()}")
-        print("Bust, You lose.")
+    while dealer.total() < 17:
+        dealer.add_card()
+
+
+def bust():
+    if player.total() > 21:
+        print(f"Your final hand: {player.hand}, final score: {player.total()}")
+        print(f"Dealer final hand: {dealer.hand}, final score: {dealer.total()}")
+        print("Bust you lose.")
         return True
 
-    elif dealer_hand.total() > 21:
-        print(f"Your final hand: {player_hand.hand}, final score: {player_hand.total()}")
-        print(f"Dealer's final hand: {dealer_hand.hand}, final score {dealer_hand.total()}")
-        print("Bust, Dealer went over, you win!")
+    elif dealer.total() > 21:
+        print(f"Your final hand: {player.hand}, final score: {player.total()}")
+        print(f"Dealer final hand: {dealer.hand}, final score: {dealer.total()}")
+        print("Dealer bust you win!")
         return True
 
-    while dealer_hand.total() < 17:
-        dealer_hand.add_card()
 
+def aces():
+    if 11 in player.hand and player.total() > 21:
+        for i in range(len(player.hand)):
+            if player.hand[i] == 11:
+                player.hand[i] = 1
+
+    if 11 in dealer.hand and dealer.total() > 21:
+        for i in range(len(dealer.hand)):
+            if dealer.hand[i] == 11:
+                dealer.hand[i] = 1
 
 
 def win():
 
-    if player_hand.total() > 21:
-        pass
-    elif dealer_hand.total() > 21:
-        pass
+    if player.total() > dealer.total():
+        print("You win!")
+
+    elif player.total() < dealer.total():
+        print("You lose.")
+
+    elif player.total() == dealer.total():
+        print("Draw")
+
+
+playing = True
+
+while True:
+
+    player = Hand()
+    dealer = Hand()
+
+    def game():
+        print(logo)
+
+        player.hand = []
+        dealer.hand = []
+
+        player.starting_hand()
+        print(player)
+        dealer.starting_hand()
+        print(f"Dealer's first card: [{dealer.hand[0]}, *]")
+
+        Hit_or_Stand()
+    game()
+
+    break
+
+
+while playing:
+
+    again = input("Would you like to play again? type 'y' or 'n' ")
+
+    if again == "y":
+        game()
+    elif again == "n":
+        print("Thanks for playing please play again soon.")
+        playing = False
     else:
-        if player_hand.total() > dealer_hand.total():
-            print("You win!")
-
-        elif player_hand.total() < dealer_hand.total():
-            print("You lose!")
-
-        elif player_hand.total() == dealer_hand.total():
-            print("Draw")
-
-
-player_hand = Hand()
-dealer_hand = Hand()
-
-
-player_hand.starting_hand()
-print(player_hand)
-
-
-dealer_hand.starting_hand()
-print(f"Dealer's first card: {dealer_hand.hand[0]}")
-
-Hit_or_Stand()
-
-win()
-
-
-
-
-
+        print("That was not an option, please pick again.")
+        continue
